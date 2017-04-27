@@ -22,6 +22,14 @@ module CompaniesHouse
       @connection.finish if @connection && @connection.started?
     end
 
+    def search_companies(query, items_per_page: nil, start_index: nil)
+      search(:companies, { q: query, items_per_page: nil, start_index: nil })
+    end
+
+    def search_officers(query, items_per_page: nil, start_index: nil)
+      search(:officers, { q: query, items_per_page: nil, start_index: nil })
+    end
+
     def company(id)
       request(:company, id)
     end
@@ -76,6 +84,22 @@ module CompaniesHouse
         resource_type: resource,
         company_id: company_id,
         transaction_id: transaction_id
+      ).execute
+    end
+    
+    def search(resource,
+               params = {},
+               transaction_id = make_transaction_id)
+      Request.new(
+        connection: connection,
+        api_key: @api_key,
+        endpoint: @endpoint,
+
+        path: "search/#{resource.to_s}",
+        query: params,
+
+        resource_type: resource,
+        transaction_id: make_transaction_id
       ).execute
     end
   end
